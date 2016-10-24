@@ -27,7 +27,7 @@ Currently, UCBindings works with:
 Create a Binding object in your activity and initialize it
 
 ```java
-public class MainActivity extends BoundActivity {
+public class MainActivity extends BoundActivity { // Extend BoundActivity to get automatic subscribe/unsubscribe
 
     private MainViewModel viewModel;
     private Binding someBinding;
@@ -39,7 +39,7 @@ public class MainActivity extends BoundActivity {
         viewModel = new MainViewModel();
 
         // Create a binding based on an AsyncSubject from RxJava
-        usersBinding = BindingFactory.INSTANCE
+        someBinding = BindingFactory.INSTANCE
                 // Provide the SubjectProvider to be subscribed to the use case observable
                 .async(viewModel.someSubjectProvider)
                 // Provide RxJava callbacks
@@ -63,7 +63,7 @@ public class MainActivity extends BoundActivity {
     @Override
     protected Binding[] getBindings() {
         // Provide the bindings you use to bind to activity lifecycle
-        return new Binding[] { usersBinding };
+        return new Binding[] { someBinding };
     }
 }
 ```
@@ -88,7 +88,7 @@ public class MainViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 // Subscribe the subject to the use case observable when firing request
-                .subscribe(usersProvider.getSubject());
+                .subscribe(someSubjectProvider.getSubject());
     }
 ```
 

@@ -17,10 +17,10 @@ UCBindings uses RxJava subjects to provide caching, replay and other subject beh
 
 The Binding objects represent your use cases on behalf of your view, and they manage how the information flows to the view, according to the selected subject behavior.
 Currently, UCBindings works with:
-  - AsyncSubject
-  - BehaviorSubject
-  - PublishSubject
-  - ReplaySubject
+  - **AsyncSubject:** Allows caching of the last item emitted when the app is in background
+  - **BehaviorSubject:** Allows similar caching but with a seed and different onCompleted behavior
+  - **PublishSubject:** Allows publish behavior, does not cache
+  - **ReplaySubject:** Allows the binding to handle the whole history of items emitted
   
 ## Usage
 

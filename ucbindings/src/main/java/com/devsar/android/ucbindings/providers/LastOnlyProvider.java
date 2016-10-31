@@ -5,7 +5,7 @@ import rx.subjects.AsyncSubject;
 /**
  * Concrete Subject Provider to be used with Rx AsyncSubject.
  */
-public final class AsyncSubjectProvider<T> extends SubjectProvider<AsyncSubject<T>> {
+public final class LastOnlyProvider<T> extends SubjectProvider<AsyncSubject<T>> {
 
     /**
      *
@@ -19,12 +19,12 @@ public final class AsyncSubjectProvider<T> extends SubjectProvider<AsyncSubject<
     /**
      * Constructs an instance with a subject.
      */
-    public AsyncSubjectProvider() {
+    public LastOnlyProvider() {
         super(createSubject());
     }
 
     @Override
-    protected AsyncSubject<T> getNewSubjectInstance() {
+    protected AsyncSubject<T> buildSubject() {
         return createSubject();
     }
 }

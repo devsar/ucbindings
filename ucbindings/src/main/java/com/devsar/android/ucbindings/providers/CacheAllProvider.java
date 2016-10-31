@@ -5,7 +5,7 @@ import rx.subjects.ReplaySubject;
 /**
  * Concrete Subject Provider to use with Rx ReplaySubject.
  */
-public final class ReplaySubjectProvider<T> extends SubjectProvider<ReplaySubject<T>> {
+public final class CacheAllProvider<T> extends SubjectProvider<ReplaySubject<T>> {
 
     /**
      *
@@ -22,7 +22,7 @@ public final class ReplaySubjectProvider<T> extends SubjectProvider<ReplaySubjec
     /**
      * Constructs an instance with a subject with an infinite capacity.
      */
-    public ReplaySubjectProvider() {
+    public CacheAllProvider() {
         super(ReplaySubject.create());
         capacity = 0;
     }
@@ -31,13 +31,13 @@ public final class ReplaySubjectProvider<T> extends SubjectProvider<ReplaySubjec
      * Constructs an instance with a subject with a given capacity.
      * @param capacity The capacity of the subject that will be provided.
      */
-    public ReplaySubjectProvider(int capacity) {
+    public CacheAllProvider(int capacity) {
         super(createSubject(capacity));
         this.capacity = capacity;
     }
 
     @Override
-    protected ReplaySubject<T> getNewSubjectInstance() {
+    protected ReplaySubject<T> buildSubject() {
         return createSubject(capacity);
     }
 }

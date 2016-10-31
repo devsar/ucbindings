@@ -1,6 +1,6 @@
 package com.devsar.android.ucbindingssample;
 
-import com.devsar.android.ucbindings.providers.AsyncSubjectProvider;
+import com.devsar.android.ucbindings.providers.LastOnlyProvider;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,7 +22,7 @@ public class MainViewModel {
     private API api;
 
     // Create a subject provider to provide the subscribed subject to the binding
-    public AsyncSubjectProvider<List<UserModel>> usersProvider;
+    public LastOnlyProvider<List<UserModel>> usersProvider;
 
     public MainViewModel() {
         Gson gson = new GsonBuilder()
@@ -34,12 +34,11 @@ public class MainViewModel {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
         api = retrofit.create(API.class);
-        usersProvider = new AsyncSubjectProvider<>();
+        usersProvider = new LastOnlyProvider<>();
     }
 
     public void getUsers() {
         api.getUsers()
-                .last()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 // Subscribe the subject to the use case observable when firing request

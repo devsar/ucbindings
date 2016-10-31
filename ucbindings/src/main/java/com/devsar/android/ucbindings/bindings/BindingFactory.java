@@ -1,9 +1,9 @@
 package com.devsar.android.ucbindings.bindings;
 
-import com.devsar.android.ucbindings.providers.AsyncSubjectProvider;
-import com.devsar.android.ucbindings.providers.BehaviorSubjectProvider;
-import com.devsar.android.ucbindings.providers.PublishSubjectProvider;
-import com.devsar.android.ucbindings.providers.ReplaySubjectProvider;
+import com.devsar.android.ucbindings.providers.LastOnlyProvider;
+import com.devsar.android.ucbindings.providers.CacheLastProvider;
+import com.devsar.android.ucbindings.providers.NoCacheProvider;
+import com.devsar.android.ucbindings.providers.CacheAllProvider;
 
 /**
  * Created by Juan on 20/10/16.
@@ -11,7 +11,7 @@ import com.devsar.android.ucbindings.providers.ReplaySubjectProvider;
 
 public class BindingFactory {
 
-    public static final BindingFactory INSTANCE = new BindingFactory();
+    public static final BindingFactory instance = new BindingFactory();
 
     private BindingFactory() {}
 
@@ -20,7 +20,7 @@ public class BindingFactory {
      *                 This should be provided by the view model
      * @return An async binding builder to customize binding callbacks
      */
-    public <T> BindingBuilder<T> async(AsyncSubjectProvider<T> provider) {
+    public <T> Binding.Builder<T> async(LastOnlyProvider<T> provider) {
         return new AsyncBindingBuilder<>(provider);
     }
 
@@ -29,7 +29,7 @@ public class BindingFactory {
      *                 This should be provided by the view model
      * @return A behavior binding builder to customize binding callbacks
      */
-    public <T> BindingBuilder<T> behavior(BehaviorSubjectProvider<T> provider) {
+    public <T> Binding.Builder<T> behavior(CacheLastProvider<T> provider) {
         return new BehaviorBindingBuilder<>(provider);
     }
 
@@ -38,7 +38,7 @@ public class BindingFactory {
      *                 This should be provided by the view model
      * @return A publish binding builder to customize binding callbacks
      */
-    public <T> BindingBuilder<T> publish(PublishSubjectProvider<T> provider) {
+    public <T> Binding.Builder<T> publish(NoCacheProvider<T> provider) {
         return new PublishBindingBuilder<>(provider);
     }
 
@@ -47,7 +47,7 @@ public class BindingFactory {
      *                 This should be provided by the view model
      * @return A replay binding builder to customize binding callbacks
      */
-    public <T> BindingBuilder<T> replay(ReplaySubjectProvider<T> provider) {
+    public <T> Binding.Builder<T> replay(CacheAllProvider<T> provider) {
         return new ReplayBindingBuilder<>(provider);
     }
 
@@ -56,9 +56,9 @@ public class BindingFactory {
 
     private class AsyncBindingBuilder<T> extends AbstractBindingBuilder<T> {
 
-        private final AsyncSubjectProvider<T> provider;
+        private final LastOnlyProvider<T> provider;
 
-        private AsyncBindingBuilder(AsyncSubjectProvider<T> provider) {
+        private AsyncBindingBuilder(LastOnlyProvider<T> provider) {
             this.provider = provider;
         }
 
@@ -70,9 +70,9 @@ public class BindingFactory {
 
     private class BehaviorBindingBuilder<T> extends AbstractBindingBuilder<T> {
 
-        private final BehaviorSubjectProvider<T> provider;
+        private final CacheLastProvider<T> provider;
 
-        private BehaviorBindingBuilder(BehaviorSubjectProvider<T> provider) {
+        private BehaviorBindingBuilder(CacheLastProvider<T> provider) {
             this.provider = provider;
         }
 
@@ -84,9 +84,9 @@ public class BindingFactory {
 
     private class PublishBindingBuilder<T> extends AbstractBindingBuilder<T> {
 
-        private final PublishSubjectProvider<T> provider;
+        private final NoCacheProvider<T> provider;
 
-        private PublishBindingBuilder(PublishSubjectProvider<T> provider) {
+        private PublishBindingBuilder(NoCacheProvider<T> provider) {
             this.provider = provider;
         }
 
@@ -98,9 +98,9 @@ public class BindingFactory {
 
     private class ReplayBindingBuilder<T> extends AbstractBindingBuilder<T> {
 
-        private final ReplaySubjectProvider<T> provider;
+        private final CacheAllProvider<T> provider;
 
-        private ReplayBindingBuilder(ReplaySubjectProvider<T> provider) {
+        private ReplayBindingBuilder(CacheAllProvider<T> provider) {
             this.provider = provider;
         }
 

@@ -5,7 +5,7 @@ import rx.subjects.BehaviorSubject;
 /**
  * Concrete Subject Provider to be used with Rx BehaviorSubject.
  */
-public final class BehaviorSubjectProvider<T> extends SubjectProvider<BehaviorSubject<T>> {
+public final class CacheLastProvider<T> extends SubjectProvider<BehaviorSubject<T>> {
 
     /**
      *
@@ -19,12 +19,12 @@ public final class BehaviorSubjectProvider<T> extends SubjectProvider<BehaviorSu
     /**
      * Constructs an instance with a subject.
      */
-    public BehaviorSubjectProvider() {
+    public CacheLastProvider() {
         super(createSubject());
     }
 
     @Override
-    protected BehaviorSubject<T> getNewSubjectInstance() {
+    protected BehaviorSubject<T> buildSubject() {
         return createSubject();
     }
 }

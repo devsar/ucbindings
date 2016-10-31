@@ -32,7 +32,7 @@ public abstract class SubjectProvider<S extends Subject<?, ?>> {
      * same use cases as its predecessor was.
      */
     public S rebuildSubject() {
-        subject = getNewSubjectInstance();
+        subject = buildSubject();
         return subject;
     }
 
@@ -40,5 +40,5 @@ public abstract class SubjectProvider<S extends Subject<?, ?>> {
      *
      * @return A new subject instance
      */
-    protected abstract S getNewSubjectInstance();
+    protected abstract S buildSubject();
 }

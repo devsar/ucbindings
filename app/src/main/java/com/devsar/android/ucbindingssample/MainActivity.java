@@ -1,6 +1,7 @@
 package com.devsar.android.ucbindingssample;
 
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devsar.android.ucbindings.bindings.Binding;
@@ -8,6 +9,8 @@ import com.devsar.android.ucbindings.bindings.BindingFactory;
 import com.devsar.android.ucbindings.bindings.BoundActivity;
 
 public class MainActivity extends BoundActivity { // Extend BoundActivity to get lifecycle goodies
+
+    private TextView lblHello;
 
     private MainViewModel viewModel;
     // Declare the use case binding
@@ -17,17 +20,19 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        lblHello = (TextView) findViewById(R.id.lblHello);
         viewModel = new MainViewModel();
 
         // Create a binding based on an AsyncSubject from RxJava
-        usersBinding = BindingFactory.INSTANCE
+        usersBinding = BindingFactory.instance
                 // Provide the SubjectProvider to be subscribed to the use case observable
                 .async(viewModel.usersProvider)
                 // Provide RxJava callbacks
-                .onNext(users ->
+                .onNext(users -> {
                     // Display users on screen here
-                    Toast.makeText(this, "Users received", Toast.LENGTH_SHORT).show()
-                )
+                    lblHello.setText(users.get(0).getUsername());
+                    Toast.makeText(this, "Users received", Toast.LENGTH_SHORT).show();
+                })
                 .onError(error -> Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(() -> Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show())
                 // Create Binding object

@@ -17,53 +17,58 @@ UCBindings uses RxJava subjects to provide caching, replay and other subject beh
 
 The Binding objects represent your use cases on behalf of your view, and they manage how the information flows to the view, according to the selected subject behavior.
 Currently, UCBindings works with:
-  - **AsyncSubject:** Allows caching of the last item emitted when the app is in background
-  - **BehaviorSubject:** Allows similar caching but with a seed and different onCompleted behavior
-  - **PublishSubject:** Allows publish behavior, does not cache
-  - **ReplaySubject:** Allows the binding to handle the whole history of items emitted
+  - **AsyncSubject:** Allows caching of the last item only
+  - **BehaviorSubject:** Allows caching of the last item
+  - **PublishSubject:** Does not cache at all
+  - **ReplaySubject:** Caches everything
   
 ## Usage
 
 Create a Binding object in your activity and initialize it
 
 ```java
-public class MainActivity extends BoundActivity { // Extend BoundActivity to get automatic subscribe/unsubscribe
+public class MainActivity extends BoundActivity { // Extend BoundActivity to get lifecycle goodies
+
+    private TextView lblHello;
 
     private MainViewModel viewModel;
-    private Binding someBinding;
-  
+    // Declare the use case binding
+    private Binding usersBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        lblHello = (TextView) findViewById(R.id.lblHello);
         viewModel = new MainViewModel();
 
-        // Create a binding based on an AsyncSubject from RxJava
-        someBinding = BindingFactory.INSTANCE
-                // Provide the SubjectProvider to be subscribed to the use case observable
-                .async(viewModel.someSubjectProvider)
+        // Create a binding from your provider
+        usersBinding = new BindingBuilder<>(viewModel.usersProvider)
                 // Provide RxJava callbacks
-                .onNext(data ->
-                    // Display data on screen here
-                    Toast.makeText(this, "Data received", Toast.LENGTH_SHORT).show()
-                )
+                .onNext(users -> {
+                    // Display users on screen here
+                    lblHello.setText(users.get(0).getUsername());
+                    Toast.makeText(this, "Users received", Toast.LENGTH_SHORT).show();
+                })
                 .onError(error -> Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(() -> Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show())
+                // specifies a binding that will be alive only until the source observable completes
+                .oneTime()
                 // Create Binding object
                 .build();
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Fire use case whenever you like
+        // Fire use case whenever you like without creating subscriptions in your view
         viewModel.getUsers();
     }
 
     @Override
     protected Binding[] getBindings() {
-        // Provide the bindings you use to bind to activity lifecycle
-        return new Binding[] { someBinding };
+        // Provide the bindings you use to bind to activity/fragment lifecycle
+        return new Binding[] { usersBinding };
     }
 }
 ```
@@ -75,24 +80,23 @@ public class MainViewModel {
 
     private API api;
 
-    // Create a subject provider
-    public AsyncSubjectProvider<List<SomeModel>> someSubjectProvider;
+    // Create a subject provider to provide the subscribed subject to the binding
+    public LastOnlyProvider<List<UserModel>> usersProvider;
 
     public MainViewModel() {
-        someSubjectProvider = new AsyncSubjectProvider<>();
+        api = new API();
+        usersProvider = new LastOnlyProvider<>();
     }
 
     public void getUsers() {
-        api.getData()
-                .last()
+        api.getUsers()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 // Subscribe the subject to the use case observable when firing request
-                .subscribe(someSubjectProvider.getSubject());
+                .subscribe(usersProvider.getSubject());
     }
+}
 ```
-
-**Note:** Both the SubjectProvider and the Binding must be configured to use the same kind of subject. In the above example it is AsyncSubject, so the Binding is built using `BindingFactory.Instance.async(SubjectProvider provider)` and the SubjectProvider is an instance of `AsyncSubjectProvider`
 
 ## Download
 

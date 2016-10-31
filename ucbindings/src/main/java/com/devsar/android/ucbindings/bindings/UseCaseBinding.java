@@ -12,17 +12,17 @@ import rx.subjects.Subject;
  *
  * Concrete bindings are provided so as to be able to bind to different kinds of subjects
  */
-final class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
+class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
 
-    private final Action1<T> onResult;
-    private final Action0 onCompleted;
-    private final Action1<Throwable> onError;
+    final Action1<T> onNext;
+    final Action0 onCompleted;
+    final Action1<Throwable> onError;
     private final SubjectProvider<S> subjectProvider;
     private Subscription subscription;
 
     /**
      *
-     * @param onResult Rx Action to execute when there are results available.
+     * @param onNext Rx Action to execute when there are results available.
      *                 It is called every time there's new data available (same as onNext)
      * @param onError Rx Action to execute when the source observable fails.
      * @param onCompleted Rx Action to execute when the source observable has completed.
@@ -31,9 +31,9 @@ final class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
      *                        this is for the user to be able to refire the use case on the cases
      *                        mentioned above.
      */
-    UseCaseBinding(Action1<T> onResult, Action1<Throwable> onError,
-                          Action0 onCompleted, SubjectProvider<S> subjectProvider) {
-        this.onResult = onResult;
+    UseCaseBinding(Action1<T> onNext, Action1<Throwable> onError,
+                   Action0 onCompleted, SubjectProvider<S> subjectProvider) {
+        this.onNext = onNext;
         this.onCompleted = onCompleted;
         this.onError = onError;
         this.subjectProvider = subjectProvider;
@@ -52,9 +52,14 @@ final class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
      *
      * @param subject The Subject to subscribe the view to
      */
-    private void subscribe(S subject) {
+    protected void subscribe(S subject) {
+        subscribe(subject, onNext, onError, onCompleted);
+    }
+
+    protected final void subscribe(S subject, Action1<T> onNext,
+                             Action1<Throwable> onError, Action0 onCompleted) {
         subscription = subject.subscribe(
-                onResult,
+                onNext,
                 error -> {
                     onError.call(error);
                     resubscribe();

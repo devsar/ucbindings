@@ -5,7 +5,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devsar.android.ucbindings.bindings.Binding;
-import com.devsar.android.ucbindings.bindings.BindingFactory;
+import com.devsar.android.ucbindings.bindings.BindingBuilder;
 import com.devsar.android.ucbindings.bindings.BoundActivity;
 
 public class MainActivity extends BoundActivity { // Extend BoundActivity to get lifecycle goodies
@@ -23,10 +23,8 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
         lblHello = (TextView) findViewById(R.id.lblHello);
         viewModel = new MainViewModel();
 
-        // Create a binding based on an AsyncSubject from RxJava
-        usersBinding = BindingFactory.instance
-                // Provide the SubjectProvider to be subscribed to the use case observable
-                .async(viewModel.usersProvider)
+        // Create a binding from your provider
+        usersBinding = new BindingBuilder<>(viewModel.usersProvider)
                 // Provide RxJava callbacks
                 .onNext(users -> {
                     // Display users on screen here
@@ -35,6 +33,8 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
                 })
                 .onError(error -> Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(() -> Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show())
+                // specifies a binding that will be alive only until the source observable completes
+                .oneTime()
                 // Create Binding object
                 .build();
     }

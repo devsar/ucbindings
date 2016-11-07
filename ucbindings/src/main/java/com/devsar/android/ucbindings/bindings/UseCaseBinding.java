@@ -62,7 +62,7 @@ class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
                 onNext,
                 error -> {
                     onError.call(error);
-                    resubscribe();
+                    rebind();
                 },
                 onCompleted
         );
@@ -71,7 +71,8 @@ class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
     /**
      * Resubscribes to the use case by means of a new subject, built using the subject provider.
      */
-    private void resubscribe() {
+    @Override
+    public void rebind() {
         subscribe(subjectProvider.rebuildSubject());
     }
 

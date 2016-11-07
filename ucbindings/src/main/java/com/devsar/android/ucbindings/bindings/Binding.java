@@ -5,5 +5,6 @@ package com.devsar.android.ucbindings.bindings;
  */
 public interface Binding {
     void bind();
+    void rebind();
     void unbind();
 }

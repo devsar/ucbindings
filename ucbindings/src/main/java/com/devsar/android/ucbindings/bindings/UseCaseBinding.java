@@ -64,7 +64,10 @@ class UseCaseBinding<S extends Subject<T, T>, T> implements Binding {
                     onError.call(error);
                     rebind();
                 },
-                onCompleted
+                () -> {
+                    onCompleted.call();
+                    rebind();
+                }
         );
     }
 

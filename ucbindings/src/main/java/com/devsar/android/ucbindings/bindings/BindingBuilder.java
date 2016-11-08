@@ -14,7 +14,6 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
     private Action1<T> onResult = someT -> {};
     private Action1<Throwable> onError = e -> {};
     private Action0 onCompleted = () -> {};
-    private boolean oneTime = false;
     private SubjectProvider<S> provider;
 
     public BindingBuilder(SubjectProvider<S> provider) {
@@ -52,13 +51,12 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
     }
 
     /**
-     * Specifies that the binding should be made just one time. When the use case finishes,
+     * Builds a binding which should be made just one time. When the use case finishes,
      * the binding will not bind when bind() method is called.
-     * @return a Builder which will build a OneTimeBinding
+     * @return a OneTimeBinding
      */
-    public BindingBuilder<S, T> oneTime() {
-        oneTime = true;
-        return this;
+    public Binding oneTime() {
+        return new OneTimeBinding<>(onResult, onError, onCompleted, provider);
     }
 
     /**
@@ -66,10 +64,6 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
      * @return a fully functional Binding working as specified by the builder
      */
     public Binding build() {
-        if (oneTime) {
-            return new OneTimeBinding<>(onResult, onError, onCompleted, provider);
-        } else {
-            return new UseCaseBinding<>(onResult, onError, onCompleted, provider);
-        }
+        return new UseCaseBinding<>(onResult, onError, onCompleted, provider);
     }
 }

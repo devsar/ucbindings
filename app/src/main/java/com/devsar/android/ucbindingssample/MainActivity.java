@@ -1,5 +1,6 @@
 package com.devsar.android.ucbindingssample;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,8 +16,10 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
     private MainViewModel viewModel;
     // Declare the use case binding
     private Binding usersBinding;
+    private Binding timeBinding;
 
     @Override
+    @SuppressLint("ShowToast")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -33,10 +36,15 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
                 })
                 .onError(error -> Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(() -> Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show())
-                // specifies a binding that will be alive only until the source observable completes
-                .oneTime()
-                // Create Binding object
+                // Creates a binding that will be alive only until the source observable completes
+                .oneTime();
+
+        timeBinding = new BindingBuilder<>(viewModel.timeProvider)
+                .onNext(lblHello::setText)
+                .onError(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show())
+                .onCompleted(Toast.makeText(this, "Done", Toast.LENGTH_SHORT)::show)
                 .build();
+        viewModel.startTimer();
     }
 
     @Override
@@ -49,6 +57,6 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
     @Override
     protected Binding[] getBindings() {
         // Provide the bindings you use to bind to activity/fragment lifecycle
-        return new Binding[] { usersBinding };
+        return new Binding[] { usersBinding, timeBinding };
     }
 }

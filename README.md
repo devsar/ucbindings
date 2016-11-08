@@ -53,9 +53,7 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
                 .onError(error -> Toast.makeText(this, error.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(() -> Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show())
                 // specifies a binding that will be alive only until the source observable completes
-                .oneTime()
-                // Create Binding object
-                .build();
+                .oneTime();
     }
 
     @Override

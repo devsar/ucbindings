@@ -43,7 +43,7 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
         viewModel = new MainViewModel();
 
         // Create a binding from your provider
-        usersBinding = new BindingBuilder<>(viewModel.usersProvider)
+        usersBinding = BindingBuilder.boundTo(viewModel.usersProvider)
                 // Provide RxJava callbacks
                 .onNext(users -> {
                     // Display users on screen here

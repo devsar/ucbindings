@@ -27,7 +27,7 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
         viewModel = new MainViewModel();
 
         // Create a binding from your provider
-        usersBinding = new BindingBuilder<>(viewModel.usersProvider)
+        usersBinding = BindingBuilder.boundTo(viewModel.usersProvider)
                 // Provide RxJava callbacks
                 .onNext(users -> {
                     // Display users on screen here
@@ -39,7 +39,7 @@ public class MainActivity extends BoundActivity { // Extend BoundActivity to get
                 // Creates a binding that will be alive only until the source observable completes
                 .oneTime();
 
-        timeBinding = new BindingBuilder<>(viewModel.timeProvider)
+        timeBinding = BindingBuilder.boundTo(viewModel.timeProvider)
                 .onNext(lblHello::setText)
                 .onError(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show())
                 .onCompleted(Toast.makeText(this, "Done", Toast.LENGTH_SHORT)::show)

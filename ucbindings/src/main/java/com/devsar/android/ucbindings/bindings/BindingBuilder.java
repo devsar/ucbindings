@@ -11,12 +11,16 @@ import rx.subjects.Subject;
  */
 public class BindingBuilder<S extends Subject<T, T>, T> {
 
-    private Action1<T> onResult = someT -> {};
+    public static <S extends Subject<T, T>, T> BindingBuilder<S, T> boundTo(SubjectProvider<S> provider) {
+        return new BindingBuilder<>(provider);
+    }
+
+    private Action1<T> onNext = someT -> {};
     private Action1<Throwable> onError = e -> {};
     private Action0 onCompleted = () -> {};
     private SubjectProvider<S> provider;
 
-    public BindingBuilder(SubjectProvider<S> provider) {
+    private BindingBuilder(SubjectProvider<S> provider) {
         this.provider = provider;
     }
 
@@ -26,7 +30,7 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
      * @return a Builder configured with the onNext function set
      */
     public BindingBuilder<S, T> onNext(Action1<T> callback) {
-        onResult = callback;
+        onNext = callback;
         return this;
     }
 
@@ -56,7 +60,7 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
      * @return a OneTimeBinding
      */
     public Binding oneTime() {
-        return new OneTimeBinding<>(onResult, onError, onCompleted, provider);
+        return new OneTimeBinding<>(onNext, onError, onCompleted, provider);
     }
 
     /**
@@ -64,6 +68,6 @@ public class BindingBuilder<S extends Subject<T, T>, T> {
      * @return a fully functional Binding working as specified by the builder
      */
     public Binding build() {
-        return new UseCaseBinding<>(onResult, onError, onCompleted, provider);
+        return new UseCaseBinding<>(onNext, onError, onCompleted, provider);
     }
 }

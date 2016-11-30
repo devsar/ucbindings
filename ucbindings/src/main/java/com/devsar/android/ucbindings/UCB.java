@@ -22,9 +22,9 @@ public class UCB {
         return timer(mappingFunction, 60);
     }
 
-    public static <T> Observable<T> poll(Observable<T> pollObservable, Func1<T, Boolean> until) {
+    public static <T> Observable<T> poll(Func1<Long, Observable<T>> pollObservable, Func1<T, Boolean> until) {
         return Observable.interval(1, TimeUnit.SECONDS, Schedulers.io())
-                .flatMap(tick -> pollObservable)
+                .flatMap(pollObservable)
                 .takeUntil(until)
                 .filter(until);
     }
